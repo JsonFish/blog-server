@@ -1,13 +1,12 @@
-var express = require('express');
-var router = express.Router();
-
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-/* GET users listing. */
-router.post('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+// 用户登录注册路由
+const express = require("express");
+// 路由
+const router = express.Router();
+// 导入对应处理函数
+const usersHandle = require("../routes_handle/usersHandle");
+// 用户登录
+router.post("/user/login", usersHandle.userLogin);
+// 用户注册
+router.post("/user/register", usersHandle.userSignIn);
 
 module.exports = router;

@@ -1,20 +1,26 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+const createError = require("http-errors");
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
 
-var indexRouter = require("./routes/index");
-
+const indexRouter = require("./routes/index");
+// 导入加密字符串配置文件
+const config = require("./config/default");
 // 获取用户的详细IP信息
 const expressip = require("express-ip");
+const expressJWT = require("express-jwt");
+// 必须在路由之前配置
 
-var app = express();
-
+const app = express();
+app.use(
+  expressJWT({ secret: config.jwtSecretKey, algorithms: ["HS256"] }).unless({
+    path: ["/api/user/login", "/api/user/register"], // 请求白名单 ，不需要token
+  })
+);
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
-
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -25,7 +31,6 @@ app.use(expressip().getIpInfoMiddleware);
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api", indexRouter);
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

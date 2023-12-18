@@ -7,7 +7,7 @@ const db = {
   port: "3306", //端口号
   user: "root", //用户名
   password: "admin123", //填写你的数据库root账户的密码
-  database: "blog_server", //要访问的数据库名称
+  database: "blog", //要访问的数据库名称
 };
 
 // 封装数据库连接方法
@@ -20,11 +20,8 @@ const connectionDB = (sql, params, cb) => {
       console.log("数据库连接失败");
       return;
     }
-    console.log("数据库连接成功");
     connection.query(sql, params, cb);
   });
 };
 
 module.exports = connectionDB;
-
-
