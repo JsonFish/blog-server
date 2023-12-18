@@ -78,7 +78,6 @@ exports.userSignIn = (req, res) => {
             email: userForm.email,
             password: password,
             avatar: "public/images/defaultAvatar.png",
-            role: 1,
             // create_time:userForm.createtime,
             // update_time:userForm.updatetime
           },
