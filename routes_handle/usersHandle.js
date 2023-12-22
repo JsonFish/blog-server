@@ -1,4 +1,6 @@
 // 用户登录注册处理函数
+// 引入图片验证码模块
+const svgCaptcha = require("svg-captcha");
 // 数据库
 const db = require("../db/connection");
 // 密码加盐
@@ -7,39 +9,70 @@ const bcrypt = require("bcryptjs");
 const config = require("../config/default");
 // 引入jwt生成token
 const jwt = require("jsonwebtoken");
+// 验证码
+exports.userCaptcha = (req,res)=>{
+  const captcha = svgCaptcha.create({
+    size: 4, //长度
+    ignoreChars: "0o1il", //排除字符
+    noise: 3, //干扰线条数
+    width: 120, // 宽度
+    height: 40, // 高度
+    color: true, // 验证码字符是否有颜色，默认是没有,如果设置了背景颜色，那么默认就是有字符颜色
+    background: "#fff", // 背景色 可以自己改
+  });
+  // 记录验证码文字
+  res.type("svg"); //响应类型
+  res.send({
+    code: 200,
+    data: {
+      img: captcha.data,
+      captcha: captcha.text,
+    },
+    message: "获取成功",
+  });
+}
 // 登录
-exports.userLogin = (req, res) => {
+exports.userLogin = async (req, res) => {
   const userinfo = req.body;
   const sql = `select * from users where email=?`;
-  db(sql, userinfo.email, (err, results) => {
-    if (err) {
-      return res.send({ code: 400, message: err.message });
-    }
-    // 账号不存在
-    if (results.length == 0)
-      return res.send({ code: 201, data: "", message: "该邮箱未注册!" });
-    if (results.length == 1) {
-      // 解密
-      const compareResult = bcrypt.compareSync(
-        userinfo.password,
-        results[0].password
-      );
-      if (!compareResult) return res.send({ code: 201, message: "密码错误" });
-      // 剔除密码和头像进行加密
-      const user = { ...results[0], password: "", avatar: "" };
-      // 生成 Token 字符串
-      const tokenStr = jwt.sign(user, config.jwtSecretKey, {
-        expiresIn: "48h", // token 有效期为 48 个小时
-      });
-      return res.send({
-        code: 200,
-        data: {
-          token: "Bearer " + tokenStr,
-        },
-        message: "登录成功",
-      });
-    }
-  });
+  await new Promise((resovle, reject) => {
+    db(sql, userinfo.email, (err, results) => {
+      if (err) {
+        reject({ code: 400, message: err.message });
+      }
+      // 账号不存在
+      if (results.length == 0) {
+        resovle({ code: 201, data: null, message: "邮箱或密码错误!" });
+      }
+      if (results.length == 1) {
+        // 解密
+        const compareResult = bcrypt.compareSync(
+          userinfo.password,
+          results[0].password
+        );
+        if (!compareResult)
+          reject({ code: 201, message: "邮箱或密码错误!", data: null });
+        // 剔除密码和头像进行加密
+        const user = { ...results[0], password: "", avatar: "" };
+        // 生成 Token 字符串
+        const tokenStr = jwt.sign(user, config.jwtSecretKey, {
+          expiresIn: "24h", // token 有效期为 48 个小时
+        });
+        resovle({ code: 200, data: { token: tokenStr }, message: "登录成功" });
+      }
+    });
+  })
+    .then(
+      (result) => {
+        res.send(result);
+      },
+      (reason) => {
+        res.send(reason);
+      }
+    )
+     .catch((error) => {
+      console.log(error);
+    });
 };
 // 注册
 exports.userSignIn = (req, res) => {

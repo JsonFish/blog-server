@@ -15,7 +15,7 @@ const expressJWT = require("express-jwt");
 const app = express();
 app.use(
   expressJWT({ secret: config.jwtSecretKey, algorithms: ["HS256"] }).unless({
-    path: ["/api/user/login", "/api/user/register"], // 请求白名单 ，不需要token
+    path: ["/api/user/login", "/api/user/register", "/api/user/captcha"], // 请求白名单 ，不需要token
   })
 );
 // view engine setup
