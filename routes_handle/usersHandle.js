@@ -10,7 +10,7 @@ const config = require("../config/default");
 // 引入jwt生成token
 const jwt = require("jsonwebtoken");
 // 验证码
-exports.userCaptcha = (req,res)=>{
+exports.userCaptcha = (req, res) => {
   const captcha = svgCaptcha.create({
     size: 4, //长度
     ignoreChars: "0o1il", //排除字符
@@ -30,67 +30,47 @@ exports.userCaptcha = (req,res)=>{
     },
     message: "获取成功",
   });
-}
+};
 // 登录
 exports.userLogin = async (req, res) => {
   const userinfo = req.body;
   const sql = `select * from users where email=?`;
-  await new Promise((resovle, reject) => {
-    db(sql, userinfo.email, (err, results) => {
-      if (err) {
-        reject({ code: 400, message: err.message });
-      }
-      // 账号不存在
-      if (results.length == 0) {
-        resovle({ code: 201, data: null, message: "邮箱或密码错误!" });
-      }
-      if (results.length == 1) {
-        // 解密
-        const compareResult = bcrypt.compareSync(
-          userinfo.password,
-          results[0].password
-        );
-        if (!compareResult)
-          reject({ code: 201, message: "邮箱或密码错误!", data: null });
-        // 剔除密码和头像进行加密
-        const user = { ...results[0], password: "", avatar: "" };
-        // 生成 Token 字符串
-        const tokenStr = jwt.sign(user, config.jwtSecretKey, {
-          expiresIn: "24h", // token 有效期为 48 个小时
-        });
-        resovle({ code: 200, data: { token: tokenStr }, message: "登录成功" });
-      }
-    });
-  })
-    .then(
-      (result) => {
-        res.send(result);
-      },
-      (reason) => {
-        res.send(reason);
-      }
-    )
-     .catch((error) => {
-      console.log(error);
-    });
+  await db(sql, userinfo.email, (results, fields) => {
+    // fields为连接查询数据库的一些字段;
+
+    // 账号不存在
+    if (results.length == 0) {
+      res.send({ code: 201, data: null, message: "邮箱或密码错误!" });
+    }
+    if (results.length == 1) {
+      // password解密
+      const compareResult = bcrypt.compareSync(
+        userinfo.password,
+        results[0].password
+      );
+      if (!compareResult)
+        res.send({ code: 201, message: "邮箱或密码错误!", data: null });
+      // 剔除密码和头像进行加密
+      const user = { ...results[0], password: "", avatar: "" };
+      // 生成 Token 字符串
+      const tokenStr = jwt.sign(user, config.jwtSecretKey, {
+        expiresIn: "24h", // token 有效期为 48 个小时
+      });
+      res.send({ code: 200, data: { token: tokenStr }, message: "登录成功" });
+    }
+  });
 };
 // 注册
 exports.userSignIn = (req, res) => {
   const userForm = req.body;
   const sql = `select * from users where email=?`;
-  db(sql, userForm.email, (err, results) => {
-    if (err) {
-      return res.send({ code: 400, data: null, message: err.message });
-    }
+  db(sql, userForm.email, (results, fields) => {
     if (results.length !== 0) {
       return res.send({ code: 201, data: null, message: "该邮箱已被注册" });
     } else {
       // 验证用户名是否被占用
       const sql2 = `select * from users where username=?`;
-      db(sql2, userForm.username, (err, results) => {
-        if (err) {
-          return res.send({ code: 400, data: null, message: err.message });
-        }
+      db(sql2, userForm.username, (results, fields) => {
         // 用户明被占用
         if (results.length !== 0) {
           return res.send({

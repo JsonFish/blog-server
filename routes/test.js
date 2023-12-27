@@ -6,7 +6,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 router.get('/userinfo/getinfo',(req,res)=>{
-  console.log(req.user);
+  // console.log(req.user);
    res.send({
      code: 200,
      message: "获取用户信息成功",
