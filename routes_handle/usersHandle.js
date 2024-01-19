@@ -35,7 +35,7 @@ exports.userCaptcha = (req, res) => {
 exports.userLogin = async (req, res) => {
   const userinfo = req.body;
   const sql = `select * from users where email=?`;
-  await db(sql, userinfo.email, (results, fields) => {
+  await db(sql, userinfo.email, (results) => {
     // fields为连接查询数据库的一些字段;
 
     // 账号不存在
@@ -61,29 +61,29 @@ exports.userLogin = async (req, res) => {
   });
 };
 // 注册
-exports.userSignIn = (req, res) => {
+exports.userSignIn = async (req, res) => {
   const userForm = req.body;
   const sql = `select * from users where email=?`;
-  db(sql, userForm.email, (results, fields) => {
+  await db(sql, userForm.email, async (results) => {
     if (results.length !== 0) {
       return res.send({ code: 201, data: null, message: "该邮箱已被注册" });
     } else {
       // 验证用户名是否被占用
       const sql2 = `select * from users where username=?`;
-      db(sql2, userForm.username, (results, fields) => {
+      await db(sql2, userForm.username, (results) => {
         // 用户明被占用
         if (results.length !== 0) {
           return res.send({
             code: 201,
             data: null,
-            message: "该用户名已被占用",
+            message: "该用户名已被注册!",
           });
         }
         // 生成盐
         let salt = bcrypt.genSaltSync(10); //其中 10 是工作因子，表示计算哈希所需的成本。工作因子越高，计算哈希的成本越高，生成哈希密码时间越长 密码越安全
+        // 密码加密
         const password = bcrypt.hashSync(userForm.password, salt); // 将密码与盐进行哈希加密
         const sql3 = "insert into users set ?";
-        console.log(userForm);
         db(
           sql3,
           {

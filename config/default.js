@@ -6,5 +6,5 @@ exports.databaseConfig = {
   password: "admin123", //填写你的数据库root账户的密码
   database: "blog", //要访问的数据库名称
 };
-// 生成token的加密字符串
+// 加密token的盐
 exports.jwtSecretKey = "XiaoYuNumberOne^_^";
