@@ -1,26 +1,39 @@
 const db = require("../db/connection");
 // 查询标签
 exports.getTagList = async (req, res) => {
-  const { currentPage, pageSize, tagName } = req.query;
-  // const pageNumber = parseInt(currentPage) || 1;
-  // const size = parseInt(pageSize) || 10;
-  const inquireTagTotal = `select * from tags where status = ? and tagName like "%${tagName}%"`;
-  let total;
-  await db(inquireTagTotal, 0).then((result) => {
-    total = result.length;
-  });
-  const inquireTagListSql = `SELECT * FROM tags WHERE status = 0 and tagName like "%${tagName}%" ORDER BY create_time DESC LIMIT ${pageSize}  OFFSET ${
-    (currentPage - 1) * pageSize
-  }`;
-  const results = await db(inquireTagListSql);
-  res.send({
-    code: 200,
-    data: {
-      tagList: results,
-      total: total,
-    },
-    message: "success",
-  });
+  if (req.query.currentPage && req.query.pageSize) {
+    const { currentPage, pageSize, tagName } = req.query;
+    // const pageNumber = parseInt(currentPage) || 1;
+    // const size = parseInt(pageSize) || 10;
+    const inquireTagTotal = `select * from tags where status = ? and tagName like "%${tagName}%"`;
+    let total;
+    await db(inquireTagTotal, 0).then((result) => {
+      total = result.length;
+    });
+    const inquireTagListSql = `SELECT * FROM tags WHERE status = 0 and tagName like "%${tagName}%" ORDER BY create_time DESC LIMIT ${pageSize}  OFFSET ${
+      (currentPage - 1) * pageSize
+    }`;
+    const results = await db(inquireTagListSql);
+    res.send({
+      code: 200,
+      data: {
+        tagList: results,
+        total: total,
+      },
+      message: "success",
+    });
+  }else{
+    const inquireTagList = "SELECT * FROM tags where status = 0";
+    db(inquireTagList).then((results) => {
+      res.send({
+        code: 200,
+        data: {
+          tagList: results,
+        },
+        message: "success",
+      });
+    });
+  }
 };
 
 // 添加或修改标签

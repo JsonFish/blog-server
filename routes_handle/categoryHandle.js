@@ -1,27 +1,40 @@
 const db = require("../db/connection");
 // 查询分类
 exports.getCategoryList = async (req, res) => {
-  const { currentPage, pageSize, categoryName } = req.query;
-  // const PageNum = parseInt(currentPage) || 1;
-  // const size = parseInt(pageSize) || 10;
-  const inquireCategoryTotal = `select * from category where status = ? and categoryName like "%${categoryName}%"`;
-  let total;
-  await db(inquireCategoryTotal, 0).then((result) => {
-    total = result.length;
-  });
-  const inquireCategoryList = `SELECT * FROM category where status = 0 and categoryName like "%${categoryName}%" ORDER BY create_time DESC LIMIT ${pageSize}  OFFSET ${
-    (currentPage - 1) * pageSize
-  }`;
-  db(inquireCategoryList).then((results) => {
-    res.send({
-      code: 200,
-      data: {
-        categoryList: results,
-        total: total,
-      },
-      message: "success",
+  if (req.query.currentPage && req.query.pageSize) {
+    const { currentPage, pageSize, categoryName } = req.query;
+    // const PageNum = parseInt(currentPage) || 1;
+    // const size = parseInt(pageSize) || 10;
+    const inquireCategoryTotal = `select * from category where status = ? and categoryName like "%${categoryName}%"`;
+    let total;
+    await db(inquireCategoryTotal, 0).then((result) => {
+      total = result.length;
     });
-  });
+    const inquireCategoryList = `SELECT * FROM category where status = 0 and categoryName like "%${categoryName}%" ORDER BY create_time DESC LIMIT ${pageSize}  OFFSET ${
+      (currentPage - 1) * pageSize
+    }`;
+    db(inquireCategoryList).then((results) => {
+      res.send({
+        code: 200,
+        data: {
+          categoryList: results,
+          total: total,
+        },
+        message: "success",
+      });
+    });
+  } else {
+    const inquireCategoryList = "SELECT * FROM category where status = 0";
+    db(inquireCategoryList).then((results) => {
+      res.send({
+        code: 200,
+        data: {
+          categoryList: results,
+        },
+        message: "success",
+      });
+    });
+  }
 };
 
 // 添加或修改分类
@@ -68,7 +81,6 @@ exports.addOrUpdateCategory = async (req, res) => {
     // 查询是否已存在
     const inquireSql = "select * from category where categoryName = ?";
     const result = await db(inquireSql, req.body.categoryName);
-    console.log(result);
     if (result.length != 0) {
       return res.send({ code: 100, message: "标签已存在", data: null });
     }
