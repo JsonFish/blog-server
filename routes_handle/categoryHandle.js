@@ -82,7 +82,7 @@ exports.addOrUpdateCategory = async (req, res) => {
     const inquireSql = "select * from category where categoryName = ?";
     const result = await db(inquireSql, req.body.categoryName);
     if (result.length != 0) {
-      return res.send({ code: 100, message: "标签已存在", data: null });
+      return res.send({ code: 100, message: "该分类已存在", data: null });
     }
     const sql = "insert into category set ?";
     db(sql, {

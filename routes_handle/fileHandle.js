@@ -31,6 +31,7 @@ exports.upload = (req, res) => {
     });
   }
   const file = req.file;
+  console.log(file);
   let key = Date.now().toString() + ".png";
   let path = "./public/images/" + key;
   // 获取上传token
@@ -38,7 +39,6 @@ exports.upload = (req, res) => {
   try {
     fs.renameSync("./public/images/" + file.filename, path);
   } catch (err) {
-    console.log("err", err);
     throw err;
   }
   let formUploader = new qiniu.form_up.FormUploader(qiniuConfig);

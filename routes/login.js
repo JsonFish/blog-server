@@ -1,4 +1,7 @@
 const express = require("express");
+const expressJWT = require("express-jwt");
+// 导入加密字符串配置文件
+const config = require("../config/default");
 const router = express.Router();
 // 导入对应处理函数
 const usersHandle = require("../routes_handle/loginHandle");
@@ -9,6 +12,13 @@ router.post("/login", usersHandle.userLogin);
 // 用户注册
 router.post("/register", usersHandle.userSignIn);
 // 刷新token
-router.post("/refreshToken", usersHandle.userRefreshToken);
+router.get(
+  "/refreshToken",
+  expressJWT({
+    secret: config.refreshTokenjwtSecretKey,
+    algorithms: ["HS256"],
+  }),
+  usersHandle.userRefreshToken
+);
 
 module.exports = router;

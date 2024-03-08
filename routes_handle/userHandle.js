@@ -1,7 +1,6 @@
 const db = require("../db/connection");
 // 查询用户列表
 exports.getUserList = async (req, res) => {
-  console.log(req.ipInfo);
   const { currentPage, pageSize, username } = req.query;
   //   const currentPage = parseInt(req.query.currentPage) || 1;
   //   const pageSize = parseInt(req.query.pageSize) || 10;

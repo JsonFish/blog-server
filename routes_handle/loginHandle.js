@@ -28,7 +28,6 @@ exports.userCaptcha = (req, res) => {
 // 登录
 exports.userLogin = async (req, res) => {
   const userinfo = req.body;
-  console.log(userinfo);
   // 验证码正确
   if (req.session.captcha == userinfo.code) {
     const sql = `select * from users where email=?`;
@@ -52,9 +51,9 @@ exports.userLogin = async (req, res) => {
           results[0].password
         );
         if (compareResult) {
+          const { avatar, username } = results[0];
           // 剔除密码和头像进行加密
           const user = { ...results[0], password: "", avatar: "" };
-          console.log(user);
           // 生成 Token 字符串
           const accessToken = jwt.sign(user, config.jwtSecretKey, {
             expiresIn: "2h", // token 有效期为 48 个小时 24h 10s
@@ -64,7 +63,7 @@ exports.userLogin = async (req, res) => {
           });
           res.send({
             code: 200,
-            data: { accessToken, refreshToken },
+            data: { username, avatar, accessToken, refreshToken },
             message: "登录成功",
           });
         } else {
@@ -124,52 +123,24 @@ exports.userSignIn = async (req, res) => {
 };
 // 刷新token
 exports.userRefreshToken = (req, res) => {
-  if (req.body.refreshToken) {
-    // 解密刷新token
-    jwt.verify(
-      req.body.refreshToken,
-      config.refreshTokenjwtSecretKey,
-      (error, decoded) => {
-        // refreshToken 不正确 过期
-        if (error) {
-          console.log(error.message);
-          return res.send({
-            code: 401,
-            data: null,
-            message: "身份认证过期, 请重新登录！",
-          });
-        }
-        // 解密成功
-        if (decoded) {
-          delete decoded.iat;
-          delete decoded.exp;
-          const userInfo = {
-            ...decoded,
-            password: "",
-            avatar: "",
-          };
-          const accessToken = jwt.sign(userInfo, config.jwtSecretKey, {
-            expiresIn: "2h", // token 有效期为 48 个小时 24h
-          });
-          const refreshToken = jwt.sign(
-            userInfo,
-            config.refreshTokenjwtSecretKey,
-            {
-              expiresIn: "7d",
-            }
-          );
-          return res.send({
-            code: 200,
-            data: { accessToken, refreshToken },
-            message: "token刷新成功",
-          });
-        }
-      }
-    );
+  if (req.user) {
+    delete req.user.iat;
+    delete req.user.exp;
+    const userInfo = {
+      ...req.user,
+      password: "",
+      avatar: "",
+    };
+    const accessToken = jwt.sign(userInfo, config.jwtSecretKey, {
+      expiresIn: "2h", // token 有效期为 48 个小时 24h
+    });
+    const refreshToken = jwt.sign(userInfo, config.refreshTokenjwtSecretKey, {
+      expiresIn: "7d",
+    });
+    return res.send({
+      code: 200,
+      data: { accessToken, refreshToken },
+      message: "token刷新成功",
+    });
   }
-  res.send({
-    code: 400,
-    message: "refreshToken error",
-    data: null,
-  });
 };
