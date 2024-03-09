@@ -2,22 +2,22 @@ const db = require("../db/connection");
 // 查询文章
 exports.getArticleList = async (req, res) => {
   if (req.query.currentPage && req.query.pageSize) {
-    const { currentPage, pageSize, categoryName } = req.query;
+    const { currentPage, pageSize, articleTitle, status } = req.query;
     // const PageNum = parseInt(currentPage) || 1;
     // const size = parseInt(pageSize) || 10;
-    const inquireCategoryTotal = `select * from category where status = ? and categoryName like "%${categoryName}%"`;
+    const inquireArticleTotal = `select * from article where status = ? and articleTitle like "%${articleTitle}%"`;
     let total;
-    await db(inquireCategoryTotal, 0).then((result) => {
+    await db(inquireArticleTotal, status).then((result) => {
       total = result.length;
     });
-    const inquireCategoryList = `SELECT * FROM category where status = 0 and categoryName like "%${categoryName}%" ORDER BY create_time DESC LIMIT ${pageSize}  OFFSET ${
+    const inquireArticleList = `SELECT * FROM article where status = ? and articleTitle like "%${articleTitle}%" ORDER BY create_time DESC LIMIT ${pageSize}  OFFSET ${
       (currentPage - 1) * pageSize
     }`;
-    db(inquireCategoryList).then((results) => {
+    db(inquireArticleList, status).then((results) => {
       res.send({
         code: 200,
         data: {
-          categoryList: results,
+          articleList: results,
           total: total,
         },
         message: "success",

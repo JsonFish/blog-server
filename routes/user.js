@@ -7,5 +7,5 @@ const authentication = require("../middleware/authentication");
 const usersHandle = require("../routes_handle/userHandle")
 router.get("/user", usersHandle.getUserList);
 router.put("/user", authentication,usersHandle.updateUserInfo);
-router.delete("/user", authentication,usersHandle.deleteUser);
+router.delete("/user", authentication, usersHandle.dshieldUser);
 module.exports = router;
