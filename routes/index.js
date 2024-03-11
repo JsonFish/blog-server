@@ -6,4 +6,5 @@ router.use(require("./tag.js"));
 router.use(require("./category.js"));
 router.use(require("./user.js"))
 router.use(require("./article.js"));
+router.use(require("./link.js"));
 module.exports = router;

@@ -24,16 +24,6 @@ exports.getArticleList = async (req, res) => {
       });
     });
   } else {
-    const inquireCategoryList = "SELECT * FROM category where status = 0";
-    db(inquireCategoryList).then((results) => {
-      res.send({
-        code: 200,
-        data: {
-          categoryList: results,
-        },
-        message: "success",
-      });
-    });
   }
 };
 
