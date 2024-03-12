@@ -7,4 +7,6 @@ router.get("/article", articleHandle.getArticleList);
 router.post("/article", authentication, articleHandle.addOrUpdateArticle);
 router.put("/article", authentication, articleHandle.addOrUpdateArticle);
 router.delete("/article", authentication, articleHandle.deleteArticle);
+router.get("/article/draft", articleHandle.getDraft);
+router.post("/article/draft", authentication, articleHandle.saveDraft);
 module.exports = router;

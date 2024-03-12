@@ -16,5 +16,5 @@ exports.refreshTokenjwtSecretKey = "JsonYuNB666";
 // 七牛云配置
 exports.accessKey = "ZTTPel3aJqA8o3tStE7pgCuDk9pYOcCFLYroHA1R";
 exports.secretKey = "zZABCaQLBswNcBd-amSmiCpEQPwF4Y4v3Id7KFHf";
-exports.baseUrl = "http://s8ouypt63.hd-bkt.clouddn.com";
-exports.bucket  = "jsonblog";
+exports.baseUrl = "http://sa6qp7vwh.hb-bkt.clouddn.com";
+exports.bucket = "testblog-admin";

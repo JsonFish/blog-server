@@ -17,7 +17,7 @@ const putPolicy = new qiniu.rs.PutPolicy(options);
 
 // 构建配置
 const qiniuConfig = new qiniu.conf.Config();
-qiniuConfig.zone = qiniu.zone.Zone_z0; // 华东
+qiniuConfig.zone = qiniu.zone.Zone_z1; // z1 华北 z0 华东
 // 是否使用https域名
 //qiniuConfig.useHttpsDomain = true;
 // 上传是否使用cdn加速
