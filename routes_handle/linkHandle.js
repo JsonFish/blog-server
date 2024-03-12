@@ -1,4 +1,3 @@
-const { response } = require("express");
 const db = require("../db/connection");
 // 查询友链
 exports.getLinkList = async (req, res) => {
@@ -94,7 +93,6 @@ exports.agreeAccept = async (req, res) => {
 };
 // 删除友链
 exports.deleteLink = async (req, res) => {
-  console.log(req.body.id);
   if (req.body.id.length < 0) {
     return res.send({
       code: 400,
