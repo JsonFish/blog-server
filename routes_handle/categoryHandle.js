@@ -109,10 +109,9 @@ exports.deleteCategory = async (req, res) => {
     ","
   )})`;
   const result = await db(deleteCategorySql);
-  if ((result.affectedRows = 1)) {
+  if ((result.serverStatus = 2)) {
     return res.send({
       code: 200,
-      data: {},
       message: "删除成功",
     });
   }

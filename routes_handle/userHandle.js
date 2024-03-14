@@ -56,18 +56,18 @@ exports.dshieldUser = async (req, res) => {
       message: "操作失败",
     });
   }
-  const deleteSql = `UPDATE users SET status = ${req.body.status} WHERE id = ${req.body.id}`;
-  const result = await db(deleteSql);
-  if (result.serverStatus == 2) {
-    return res.send({
-      code: 200,
-      data: null,
-      message: "操作成功",
+  const { id } = req.body;
+  const sql = "select status from users where id = ?";
+  db(sql, id).then(async (response) => {
+    const status = response[0].status == 1 ? 0 : 1;
+    const updateSql = "update users set status = ? where id = ?";
+    await db(updateSql, [status, id]).then((result) => {
+      if (result.affectedRows == 1) {
+        return res.send({
+          code: 200,
+          message: "success",
+        });
+      }
     });
-  }
-  res.send({
-    code: 400,
-    data: null,
-    message: "操作失败",
   });
 };

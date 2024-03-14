@@ -38,13 +38,6 @@ exports.userLogin = async (req, res) => {
         return res.send({ code: 201, data: null, message: "该邮箱未注册!" });
       }
       if (results.length == 1) {
-        // if(!results.role){
-        //   return res.send({
-        //     code:300,
-        //     data:null,
-        //     message:'只能登录前台哦!后台用准备好的账号哦!'
-        //   })
-        // }
         // password解密 相同 compareResult 为 true, 反之为 false
         const compareResult = bcrypt.compareSync(
           userinfo.password,
@@ -53,7 +46,7 @@ exports.userLogin = async (req, res) => {
         if (compareResult) {
           const { avatar, username } = results[0];
           // 剔除密码和头像进行加密
-          const user = { ...results[0], password: "", avatar: "" };
+          const user = { ...results[0], password: "" };
           // 生成 Token 字符串
           const accessToken = jwt.sign(user, config.jwtSecretKey, {
             expiresIn: "2h", // token 有效期为 48 个小时 24h 10s

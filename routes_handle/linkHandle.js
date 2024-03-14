@@ -2,13 +2,13 @@ const db = require("../db/connection");
 // 查询友链
 exports.getLinkList = async (req, res) => {
   if (req.query.currentPage && req.query.pageSize) {
-    const { currentPage, pageSize, name, status } = req.query;
-    const inquireLinkTotal = `select * from links where status = ? and name like "%${name}%"`;
+    const { currentPage, pageSize, siteName, status } = req.query;
+    const inquireLinkTotal = `select * from links where status = ? and siteName like "%${siteName}%"`;
     let total;
     await db(inquireLinkTotal, status).then((result) => {
       total = result.length;
     });
-    const inquireLinkList = `SELECT * FROM links where status = ? and name like "%${name}%" ORDER BY create_time DESC LIMIT ${pageSize}  OFFSET ${
+    const inquireLinkList = `SELECT * FROM links where status = ? and siteName like "%${siteName}%" ORDER BY create_time DESC LIMIT ${pageSize}  OFFSET ${
       (currentPage - 1) * pageSize
     }`;
     db(inquireLinkList, status).then((results) => {
@@ -37,12 +37,14 @@ exports.getLinkList = async (req, res) => {
 
 // 添加(申请)或修改友链
 exports.addOrUpdateLink = async (req, res) => {
+  const applicant = req.user.username;
   const linkInfo = req.body;
-  const { id, name, description, avatar, url } = linkInfo;
-  if (!name || !description || !avatar || !url) {
+  linkInfo.applicant = applicant;
+  const { id, siteName, description, siteAvatar, siteUrl } = linkInfo;
+  if (siteName && description && siteAvatar && siteUrl) {
     return res.send({
       code: 1010,
-      message: "参数不能为空",
+      message: "参数错误",
     });
   }
   // 修改
@@ -100,7 +102,7 @@ exports.deleteLink = async (req, res) => {
       message: "删除失败",
     });
   }
-  const deleteLinkSql = `UPDATE links SET status = 3 WHERE id IN (${req.body.id.join(
+  const deleteLinkSql = `UPDATE links SET status = 2 WHERE id IN (${req.body.id.join(
     ","
   )})`;
   const result = await db(deleteLinkSql);
