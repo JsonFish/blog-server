@@ -13,6 +13,7 @@ exports.getMessageList = async (req, res) => {
       (currentPage - 1) * pageSize
     }`;
     db(inquireList, status).then((results) => {
+      
       res.send({
         code: 200,
         data: {

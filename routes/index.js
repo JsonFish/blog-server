@@ -9,4 +9,5 @@ router.use(require("./article.js"));
 router.use(require("./link.js"));
 router.use(require("./message.js"));
 router.use(require("./info.js"));
+router.use(require("./daily.js"))
 module.exports = router;

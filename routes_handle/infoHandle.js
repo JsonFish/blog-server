@@ -1,7 +1,7 @@
 const db = require("../db/connection");
-// 查询友链
+
 exports.getInfo = async (req, res) => {
-  const getSql = "select * from information where id = 1";
+  const getSql = "select * from information";
   db(getSql).then((response) => {
     return res.send({
       code: 200,
@@ -13,7 +13,7 @@ exports.getInfo = async (req, res) => {
 
 // 修改
 exports.updateInfo = async (req, res) => {
-  const updateSql = "UPDATE information SET ?  WHERE id = 1";
+  const updateSql = "UPDATE information SET ? ";
   db(updateSql, req.body).then((result) => {
     if (result.affectedRows == 1) {
       res.send({

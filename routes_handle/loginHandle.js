@@ -95,12 +95,14 @@ exports.userSignIn = async (req, res) => {
     let salt = bcrypt.genSaltSync(10); //其中 10 是工作因子，表示计算哈希所需的成本。工作因子越高，计算哈希的成本越高，生成哈希密码时间越长 密码越安全
     // 密码加密
     const password = bcrypt.hashSync(userForm.password, salt); // 将密码与盐进行哈希加密
+    const ip = req.ipInfo.ip;
     const sql3 = "insert into users set ?";
     const result = await db(sql3, {
       username: userForm.username,
       email: userForm.email,
       password: password,
       avatar: `${config.baseUrl}/defaultAvatar.png`,
+      ip,
     });
     // SQL 语句执行成功，但影响行数不为 1
     if (result.affectedRows !== 1) {

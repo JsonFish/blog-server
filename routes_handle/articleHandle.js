@@ -3,12 +3,15 @@ const db = require("../db/connection");
 exports.getArticleList = async (req, res) => {
   // 根据文章id查询文章详情
   if (req.query.id) {
+    const id = req.query.id;
     const sql = "select * from article where id = ?";
-    db(sql, req.query.id).then((result) => {
+    db(sql, id).then(async (result) => {
       result.forEach((item) => {
         item.tags = JSON.parse(item.tags);
         item.tagIds = item.tagIds.split(",").map(Number);
       });
+      const browseSql = "update article set browse = browse + 1 where id = ?";
+      await db(browseSql, id);
       return res.send({
         code: 200,
         data: {
@@ -26,7 +29,7 @@ exports.getArticleList = async (req, res) => {
     await db(inquireArticleTotal, status).then((result) => {
       total = result.length;
     });
-    const inquireArticleList = `SELECT * FROM article where status = ? and articleTitle like "%${articleTitle}%" ORDER BY create_time DESC LIMIT ${pageSize}  OFFSET ${
+    const inquireArticleList = `SELECT * FROM article where status = ? and articleTitle like "%${articleTitle}%" ORDER BY update_time DESC LIMIT ${pageSize}  OFFSET ${
       (currentPage - 1) * pageSize
     }`;
     db(inquireArticleList, status).then((results) => {
@@ -79,7 +82,6 @@ exports.addOrUpdateArticle = async (req, res) => {
     });
   } else {
     // 新增文章
-    delete articleInfo.id;
     const addArticleSql = "insert into article set ?";
     db(addArticleSql, articleInfo).then((result) => {
       if (result.affectedRows == 1) {
@@ -127,7 +129,7 @@ exports.deleteArticle = async (req, res) => {
   }
   const deleteSql = `UPDATE article SET status = 3 WHERE id = ? `;
   const result = await db(deleteSql, req.body.id);
-  if ((result.affectedRows == 1)) {
+  if (result.affectedRows == 1) {
     return res.send({
       code: 200,
       message: "success",

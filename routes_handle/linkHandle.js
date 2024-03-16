@@ -15,7 +15,7 @@ exports.getLinkList = async (req, res) => {
       res.send({
         code: 200,
         data: {
-          LinkList: results,
+          linkList: results,
           total: total,
         },
         message: "success",
