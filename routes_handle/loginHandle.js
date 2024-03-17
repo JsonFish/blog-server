@@ -19,7 +19,6 @@ exports.userCaptcha = (req, res) => {
   res.send({
     code: 200,
     data: {
-      captcha: code,
       imageBase64: imgbase64,
     },
     message: "获取成功",
@@ -29,7 +28,11 @@ exports.userCaptcha = (req, res) => {
 exports.userLogin = async (req, res) => {
   const userinfo = req.body;
   // 验证码正确
-  if (req.session.captcha == userinfo.code) {
+  if (
+    req.session.captcha == userinfo.code &&
+    req.session.captcha &&
+    userinfo.code
+  ) {
     const sql = `select * from users where email=?`;
     db(sql, userinfo.email).then((results) => {
       // fields为连接查询数据库的一些字段;
@@ -54,7 +57,7 @@ exports.userLogin = async (req, res) => {
           const refreshToken = jwt.sign(user, config.refreshTokenjwtSecretKey, {
             expiresIn: "7d",
           });
-          res.send({
+          return res.send({
             code: 200,
             data: { username, avatar, accessToken, refreshToken },
             message: "登录成功",

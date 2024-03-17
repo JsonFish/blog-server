@@ -1,11 +1,13 @@
 const db = require("../db/connection");
 exports.getDialyList = (req, res) => {
-  const sql = "select * from daily where status = 0";
+  const sql =
+    "select * from daily where status = 0 ORDER BY create_time DESC";
   db(sql).then(async (resposne) => {
     resposne.forEach((item) => {
       item.images = JSON.parse(item.images);
     });
-    const selectSql = "select username,avatar from users where role = 2";
+    const selectSql =
+      "select username,avatar from users where role = 2";
     const result = await db(selectSql);
     res.send({
       code: 200,
