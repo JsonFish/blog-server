@@ -1,18 +1,25 @@
 const db = require("../db/connection");
-exports.getDialyList = (req, res) => {
-  const sql =
-    "select * from daily where status = 0 ORDER BY create_time DESC";
+exports.getDialyList = async (req, res) => {
+  console.log(req.query);
+  const { currentPage, pageSize } = req.query;
+  const totalSql = `select * from daily where status = 0`;
+  let total;
+  await db(totalSql).then((results) => {
+    total = results.length;
+  });
+  const sql = `SELECT * FROM daily where status = 0 ORDER BY create_time DESC LIMIT ${pageSize}  OFFSET ${
+    (currentPage - 1) * pageSize
+  }`;
   db(sql).then(async (resposne) => {
     resposne.forEach((item) => {
       item.images = JSON.parse(item.images);
     });
-    const selectSql =
-      "select username,avatar from users where role = 2";
+    const selectSql = "select username,avatar from users where role = 2";
     const result = await db(selectSql);
     res.send({
       code: 200,
       message: "success",
-      data: { ...result[0], dynamicList: resposne },
+      data: { ...result[0], dynamicList: resposne, total },
     });
   });
 };

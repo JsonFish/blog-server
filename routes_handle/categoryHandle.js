@@ -17,9 +17,9 @@ exports.getCategoryList = async (req, res) => {
       res.send({
         code: 200,
         data: {
-          categoryList: results,
+          categoryList: results, 
           total: total,
-        },
+        }, 
         message: "success",
       });
     });

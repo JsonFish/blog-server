@@ -17,10 +17,10 @@ const app = express();
 app.use(
   expressJWT({ secret: config.jwtSecretKey, algorithms: ["HS256"] }).unless({
     path: [
-      "/api/login",
-      "/api/register",
-      "/api/imageCaptcha",
-      "/api/refreshToken",
+      "/login",
+      "/register",
+      "/imageCaptcha",
+      "/refreshToken",
     ], // 请求白名单 ，不需要token
   })
 );
@@ -44,7 +44,7 @@ app.use(expressip().getIpInfoMiddleware);
 // 静态资源托管
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/api", indexRouter);
+app.use(indexRouter);
 
 // 捕获404并转发给错误处理程序
 app.use(function (req, res, next) {
