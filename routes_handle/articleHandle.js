@@ -49,6 +49,33 @@ exports.getArticleList = async (req, res) => {
   }
 };
 
+// 前台查询文章信息
+exports.reqGetArticleList = async (req, res) => {
+  const { currentPage, pageSize } = req.query;
+  const inquireArticleTotal = `select * from article where status = 0`;
+  let total;
+  await db(inquireArticleTotal).then((result) => {
+    total = result.length;
+  });
+  const inquireArticleList = `SELECT * FROM article where status = 0 ORDER BY update_time DESC LIMIT ${pageSize} OFFSET ${
+    (currentPage - 1) * pageSize
+  }`;
+  db(inquireArticleList).then((results) => {
+    results.forEach((item) => {
+      item.tags = JSON.parse(item.tags);
+      item.tagIds = item.tagIds.split(",").map(Number);
+    });
+    return res.send({
+      code: 200,
+      data: {
+        articleList: results,
+        total: total,
+      },
+      message: "success",
+    });
+  });
+};
+
 // 添加或修改文章
 exports.addOrUpdateArticle = async (req, res) => {
   const articleInfo = req.body;
