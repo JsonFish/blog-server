@@ -11,9 +11,11 @@ const config = require("./config/default");
 // 获取用户的详细IP信息
 const expressip = require("express-ip");
 const expressJWT = require("express-jwt");
+const webRouter = require("./routes/web");
 
 // 必须在路由之前配置
 const app = express();
+app.use(webRouter);
 app.use(
   expressJWT({ secret: config.jwtSecretKey, algorithms: ["HS256"] }).unless({
     path: [
