@@ -1,6 +1,5 @@
 const db = require("../db/connection");
 exports.getDialyList = async (req, res) => {
-  console.log(req.query);
   const { currentPage, pageSize } = req.query;
   const totalSql = `select * from daily where status = 0`;
   let total;

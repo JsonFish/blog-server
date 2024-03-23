@@ -1,10 +1,10 @@
 // 数据库配置
 exports.databaseConfig = {
-  host: "120.55.93.186", //数据库地址,上线了之后替换你的服务器IP地址即可
+  host: "8.148.20.27", //数据库地址,上线了之后替换你的服务器IP地址即可
   port: "3306", //端口号
   user: "root", //用户名
   password: "whyswzan1314", //填写你的数据库root账户的密码
-  database: "blog", //要访问的数据库名称
+  database: "blog_production", //要访问的数据库名称
   timezone: "08:00", // 数据库时间格式转化
 };
 

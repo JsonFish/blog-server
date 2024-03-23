@@ -15,6 +15,7 @@ const webRouter = require("./routes/web");
 
 // 必须在路由之前配置
 const app = express();
+// 前台路由 免token401
 app.use(webRouter);
 app.use(
   expressJWT({ secret: config.jwtSecretKey, algorithms: ["HS256"] }).unless({

@@ -3,8 +3,6 @@ const db = require("../db/connection");
 exports.getCategoryList = async (req, res) => {
   if (req.query.currentPage && req.query.pageSize) {
     const { currentPage, pageSize, categoryName } = req.query;
-    // const PageNum = parseInt(currentPage) || 1;
-    // const size = parseInt(pageSize) || 10;
     const inquireCategoryTotal = `select * from category where status = ? and categoryName like "%${categoryName}%"`;
     let total;
     await db(inquireCategoryTotal, 0).then((result) => {
