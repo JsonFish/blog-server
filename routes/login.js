@@ -11,6 +11,8 @@ router.get("/imageCaptcha", usersHandle.userCaptcha);
 router.post("/login", usersHandle.userLogin);
 // 用户注册
 router.post("/register", usersHandle.userSignIn);
+// 邮箱验证码
+router.post("/email", usersHandle.sendEmail);
 // 刷新token
 router.get(
   "/refreshToken",

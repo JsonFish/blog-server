@@ -15,23 +15,18 @@ const webRouter = require("./routes/web");
 
 // 必须在路由之前配置
 const app = express();
+app.use(logger("dev"));
 // 前台路由 免token401
 app.use(webRouter);
 app.use(
   expressJWT({ secret: config.jwtSecretKey, algorithms: ["HS256"] }).unless({
-    path: [
-      "/login",
-      "/register",
-      "/imageCaptcha",
-      "/refreshToken",
-    ], // 请求白名单 ，不需要token
+    path: ["/login", "/register", "/imageCaptcha", "/refreshToken", "/email"], // 请求白名单 ，不需要token
   })
 );
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
-app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("sessiontest"));
@@ -41,7 +36,7 @@ app.use(
     resave: true,
     saveUninitialized: true,
   })
-); 
+);
 // ip
 app.use(expressip().getIpInfoMiddleware);
 // 静态资源托管
@@ -60,7 +55,7 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
-  // 呈现错误页面 
+  // 呈现错误页面
   res.status(err.status || 500);
   res.render("error");
 });
