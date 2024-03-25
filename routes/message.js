@@ -4,7 +4,7 @@ const router = express.Router();
 const authentication = require("../middleware/authentication");
 const messageHandle = require("../routes_handle/messageHandle");
 router.get("/message", messageHandle.getMessageList);
-router.post("/message", authentication, messageHandle.addMessage);
+router.post("/message", messageHandle.addMessage);
 router.put("/message", authentication, messageHandle.auditMessage);
 router.delete("/message", authentication, messageHandle.deleteMessage);
 module.exports = router;

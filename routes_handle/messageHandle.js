@@ -39,13 +39,15 @@ exports.getMessageList = async (req, res) => {
 // 新增留言
 exports.addMessage = async (req, res) => {
   const { username, id, avatar } = req.user;
-  const { message } = req.body;
+  const name = username;
+  const { text } = req.body;
+  console.log(req.body);
   const sql = "insert into messages set ?";
   db(sql, {
     avatar,
-    username,
+    name,
     userId: id,
-    message,
+    text,
   }).then((result) => {
     if (result.affectedRows == 1) {
       return res.send({ code: 200, message: "留言成功", data: null });

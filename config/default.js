@@ -16,14 +16,15 @@ exports.refreshTokenjwtSecretKey = "JsonYuNB666";
 // 七牛云配置
 exports.accessKey = "ZTTPel3aJqA8o3tStE7pgCuDk9pYOcCFLYroHA1R";
 exports.secretKey = "zZABCaQLBswNcBd-amSmiCpEQPwF4Y4v3Id7KFHf";
-exports.baseUrl = "http://sa6qp7vwh.hb-bkt.clouddn.com";
-exports.bucket = "testblog-admin";
+exports.baseUrl = "http://salsicvd7.hb-bkt.clouddn.com";
+exports.bucket = "blog-production";
 
+// 邮箱验证码配置
 exports.mailconfig = {
   host: "smtp.qq.com", // 邮箱
   port: 465, // 默认端口
   auth: {
-    user: "1557392527@qq.com", // 注册的163邮箱账号
-    pass: "zlqgbxodsnkphjje", // 邮箱的授权码，不是注册时的密码,等你开启的stmp服务自然就会知道了
+    user: "603093657@qq.com", // 邮箱账号
+    pass: "ygwvphtpngssbefb", // 邮箱的授权码，不是注册时的密码,等你开启的stmp服务自然就会知道了
   },
 };

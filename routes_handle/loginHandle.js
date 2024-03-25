@@ -10,7 +10,10 @@ const config = require("../config/default");
 const jwt = require("jsonwebtoken");
 // 邮箱验证码
 const nodemailer = require("nodemailer");
-// 验证码
+// axios
+var axios = require("axios");
+
+// 图片验证码
 exports.userCaptcha = (req, res) => {
   const code = Math.floor(Math.random() * (9999 - 999 + 1) + 999); //生成随机4位数
   req.session.captcha = code; //保存在session中，便于之后的验证码判断
@@ -31,9 +34,9 @@ exports.userLogin = async (req, res) => {
   const userinfo = req.body;
   // 验证码正确
   if (
-    req.session.captcha == userinfo.code &&
+    (req.session.captcha == userinfo.code &&
     req.session.captcha &&
-    userinfo.code
+    userinfo.code) || userinfo.freeCode 
   ) {
     const sql = `select * from users where email=?`;
     db(sql, userinfo.email).then((results) => {
@@ -80,61 +83,73 @@ exports.userLogin = async (req, res) => {
 // 注册
 exports.userSignIn = async (req, res) => {
   const userForm = req.body;
-  const email = userForm.email;
-  const code = userForm.code;
+  const { email, password, code } = userForm;
+  if (!email || !password || !code) {
+    return res.send({
+      code: -1,
+      message: "参数错误！",
+    });
+  }
+  const selectSql = `select * from users where email=?`;
+  const results = await db(selectSql, email);
+  if (results.length !== 0) {
+    return res.send({ code: 201, message: "该邮箱已注册!" });
+  }
   const sql = "select code from email_code where email = ?";
-  db(sql, email).then((response) => {
+  // 检测验证码
+  db(sql, email).then(async (response) => {
     if (response.length == 0 || code !== response[response.length - 1].code) {
       return res.send({
         code: 2001,
         message: "验证码无效！",
       });
     }
-    return res.send({
-      code: 200,
-      message: "success",
+    const username = "用户" + Math.random().toFixed(4).slice(-4);
+    let salt = bcrypt.genSaltSync(10); //其中 10 是工作因子，表示计算哈希所需的成本。工作因子越高，计算哈希的成本越高，生成哈希密码时间越长 密码越安全
+    // 密码加密
+    const bcryptPassword = bcrypt.hashSync(password, salt); // 将密码与盐进行哈希加密
+    const ip = req.ipInfo.ip;
+    var ipData = JSON.stringify({
+      ip,
     });
+    const axiosConfig = {
+      method: "post",
+      url: "https://api.xygeng.cn/openapi/ip/getInfo",
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
+        "Content-Type": "application/json",
+        Accept: "*/*",
+        Connection: "keep-alive",
+      },
+      data: ipData,
+    };
+    const ipResponse = await axios(axiosConfig);
+    let ipAddress;
+    if (ipResponse.data.code == 200) {
+      ipAddress = ipResponse.data.data.province.slice(0, -1);
+    }
+    const sql3 = "insert into users set ?";
+    const result = await db(sql3, {
+      username: username,
+      email: email,
+      password: bcryptPassword,
+      avatar: `${config.baseUrl}/defaultAvatar.png`,
+      ip,
+      ipAddress,
+    });
+    // SQL 语句执行成功，但影响行数不为 1
+    if (result.affectedRows == 1) {
+      return res.send({ code: 200, message: "注册成功" });
+      
+    }else{
+      return res.send({
+        code: 201,
+        data: null,
+        message: "注册失败！",
+      });
+    }
   });
-  // const sql = `select * from users where email=?`;
-  // const results = await db(sql, userForm.email);
-  // if (results.length !== 0) {
-  //   return res.send({ code: 201, data: {}, message: "该邮箱已被注册" });
-  // }
-  // 验证用户名是否被占用
-  // const sql2 = `select * from users where username=?`;
-  // db(sql2, userForm.username).then(async (results) => {
-  //   // 用户明被占用
-  //   if (results.length !== 0) {
-  //     return res.send({
-  //       code: 201,
-  //       data: null,
-  //       message: "该用户名已被注册!",
-  //     });
-  //   }
-  //   // 生成盐
-  //   let salt = bcrypt.genSaltSync(10); //其中 10 是工作因子，表示计算哈希所需的成本。工作因子越高，计算哈希的成本越高，生成哈希密码时间越长 密码越安全
-  //   // 密码加密
-  //   const password = bcrypt.hashSync(userForm.password, salt); // 将密码与盐进行哈希加密
-  //   const ip = req.ipInfo.ip;
-  //   const sql3 = "insert into users set ?";
-  //   const result = await db(sql3, {
-  //     username: userForm.username,
-  //     email: userForm.email,
-  //     password: password,
-  //     avatar: `${config.baseUrl}/defaultAvatar.png`,
-  //     ip,
-  //   });
-  //   // SQL 语句执行成功，但影响行数不为 1
-  //   if (result.affectedRows !== 1) {
-  //     return res.send({
-  //       code: 201,
-  //       data: null,
-  //       message: "注册失败！",
-  //     });
-  //   }
-  //   // 注册成功
-  //   return res.send({ code: 200, message: "注册成功", data: null });
-  // });
 };
 // 刷新token
 exports.userRefreshToken = (req, res) => {
