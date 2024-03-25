@@ -6,6 +6,9 @@ const infoHandle = require("../routes_handle/infoHandle");
 const dailyHandle = require("../routes_handle/dialyHandle");
 const categoryHandle = require("../routes_handle/categoryHandle");
 const messageHandle = require("../routes_handle/messageHandle");
+const LinkHandle = require("../routes_handle/linkHandle");
+// 友链
+router.get("/linkList", LinkHandle.getLinkList);
 // 留言
 router.get("/messageList", messageHandle.getMessageList);
 // 分类 

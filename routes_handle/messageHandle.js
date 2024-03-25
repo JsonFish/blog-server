@@ -39,13 +39,12 @@ exports.getMessageList = async (req, res) => {
 // 新增留言
 exports.addMessage = async (req, res) => {
   const { username, id, avatar } = req.user;
-  const name = username;
   const { text } = req.body;
   console.log(req.body);
   const sql = "insert into messages set ?";
   db(sql, {
     avatar,
-    name,
+    username,
     userId: id,
     text,
   }).then((result) => {
