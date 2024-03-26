@@ -40,7 +40,6 @@ exports.getMessageList = async (req, res) => {
 exports.addMessage = async (req, res) => {
   const { username, id, avatar } = req.user;
   const { text } = req.body;
-  console.log(req.body);
   const sql = "insert into messages set ?";
   db(sql, {
     avatar,
