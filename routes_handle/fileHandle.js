@@ -21,7 +21,7 @@ qiniuConfig.zone = qiniu.zone.Zone_z1; // z1 华北 z0 华东
 // 是否使用https域名
 //qiniuConfig.useHttpsDomain = true;
 // 上传是否使用cdn加速
-//qiniuConfig.useCdnDomain = true;
+qiniuConfig.useCdnDomain = true;
 
 exports.upload = (req, res) => {
   if (!req.file) {
@@ -31,7 +31,6 @@ exports.upload = (req, res) => {
     });
   }
   const file = req.file;
-  console.log(file);
   let key = Date.now().toString() + ".png";
   let path = "./public/images/" + key;
   // 获取上传token
@@ -63,7 +62,6 @@ exports.upload = (req, res) => {
       } else {
         res.send({
           code: "-1",
-          data: {},
           message: respBody.error,
         });
       }
