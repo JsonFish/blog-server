@@ -35,8 +35,9 @@ exports.userLogin = async (req, res) => {
   // 验证码正确
   if (
     (req.session.captcha == userinfo.code &&
-    req.session.captcha &&
-    userinfo.code) || userinfo.freeCode 
+      req.session.captcha &&
+      userinfo.code) ||
+    userinfo.freeCode
   ) {
     const sql = `select * from users where email=?`;
     db(sql, userinfo.email).then((results) => {
@@ -141,8 +142,7 @@ exports.userSignIn = async (req, res) => {
     // SQL 语句执行成功，但影响行数不为 1
     if (result.affectedRows == 1) {
       return res.send({ code: 200, message: "注册成功" });
-      
-    }else{
+    } else {
       return res.send({
         code: 201,
         data: null,
@@ -183,11 +183,11 @@ exports.sendEmail = async (req, res) => {
       message: "邮箱不能为空",
     });
   }
-  // const sql = `select * from users where email=?`;
-  // const results = await db(sql, email);
-  // if (results.length !== 0) {
-  //   return res.send({ code: 201, data: {}, message: "该邮箱已注册" });
-  // }
+  const sql = `select * from users where email=?`;
+  const results = await db(sql, email);
+  if (results.length !== 0) {
+    return res.send({ code: 201, data: {}, message: "该邮箱已注册" });
+  }
 
   const transporter = nodemailer.createTransport(config.mailconfig);
   const verify = Math.random().toFixed(4).slice(-4); // 随机6位验证码
@@ -201,7 +201,7 @@ exports.sendEmail = async (req, res) => {
       to: email,
       // 邮件内容
       text:
-        "Json Blog 博客注册，本次验证码为：" +
+        "你好！欢迎注册我的个人博客，本次验证码为：" +
         verify +
         " 请在5分钟内进行注册！ " +
         "如非本人操作，请忽略此邮件，由此给您带来的不便请谅解！",
