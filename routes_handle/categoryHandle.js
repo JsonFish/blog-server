@@ -15,9 +15,9 @@ exports.getCategoryList = async (req, res) => {
       res.send({
         code: 200,
         data: {
-          categoryList: results, 
+          categoryList: results,
           total: total,
-        }, 
+        },
         message: "success",
       });
     });
@@ -26,9 +26,7 @@ exports.getCategoryList = async (req, res) => {
     db(inquireCategoryList).then((results) => {
       res.send({
         code: 200,
-        data: {
-          categoryList: results,
-        },
+        data: results,
         message: "success",
       });
     });

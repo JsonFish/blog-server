@@ -5,7 +5,6 @@ const authentication = require("../middleware/authentication");
 const articleHandle = require("../routes_handle/articleHandle");
 // 文章
 router.get("/article", articleHandle.getArticleList);
-router.get("/get/articleList", articleHandle.reqGetArticleList);
 router.post("/article", authentication, articleHandle.addOrUpdateArticle);
 router.put("/article", authentication, articleHandle.addOrUpdateArticle);
 router.delete("/article", authentication, articleHandle.deleteArticle);
@@ -14,6 +13,7 @@ router.put(
   authentication,
   articleHandle.updateArticleStatus
 );
+router.get("/article/infor", authentication, articleHandle.getArticleById);
 // 草稿
 router.get("/article/draft", articleHandle.getDraft);
 router.post("/article/draft", authentication, articleHandle.saveDraft);

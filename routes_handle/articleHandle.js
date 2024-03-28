@@ -1,28 +1,8 @@
 const db = require("../db/connection");
-// 查询文章
+// 后台获取文章列表
 exports.getArticleList = async (req, res) => {
-  // 根据文章id查询文章详情
-  if (req.query.id) {
-    const id = req.query.id;
-    const sql = "select * from article where id = ?";
-    db(sql, id).then(async (result) => {
-      result.forEach((item) => {
-        item.tags = JSON.parse(item.tags);
-        item.tagIds = item.tagIds.split(",").map(Number);
-      });
-      const browseSql = "update article set browse = browse + 1 where id = ?";
-      await db(browseSql, id);
-      return res.send({
-        code: 200,
-        data: {
-          articleList: result,
-        },
-        message: "success",
-      });
-    });
-  }
   // 后台分页查询
-  if (req.query.currentPage && req.query.pageSize && !req.query.id) {
+  if (req.query.currentPage && req.query.pageSize) {
     const { currentPage, pageSize, articleTitle, status } = req.query;
     const inquireArticleTotal = `select * from article where status = ? and articleTitle like "%${articleTitle}%"`;
     let total;
@@ -46,10 +26,41 @@ exports.getArticleList = async (req, res) => {
         message: "success",
       });
     });
+  }else{
+    return res.send({
+      code:20,
+      message:"参数错误"
+    })
   }
 };
 
-// 前台查询文章信息
+// id查询文章
+exports.getArticleById = (req,res)=>{
+  if (req.query.id) {
+    const id = req.query.id;
+    const sql = "select * from article where id = ?";
+    db(sql, id).then(async (result) => {
+      result.forEach((item) => {
+        item.tags = JSON.parse(item.tags);
+        item.tagIds = item.tagIds.split(",").map(Number);
+      });
+      const browseSql = "update article set browse = browse + 1 where id = ?";
+      await db(browseSql, id);
+      return res.send({
+        code: 200,
+        data: result[0],
+        message: "success",
+      });
+    });
+  }else{
+    return res.send({
+      code:-200,
+      message:"参数错误"
+    })
+  }
+}
+
+// 前台获取文章列表
 exports.reqGetArticleList = async (req, res) => {
   const { currentPage, pageSize } = req.query;
   const inquireArticleTotal = `select * from article where status = 0`;
@@ -57,7 +68,7 @@ exports.reqGetArticleList = async (req, res) => {
   await db(inquireArticleTotal).then((result) => {
     total = result.length;
   });
-  const inquireArticleList = `SELECT * FROM article where status = 0 ORDER BY update_time DESC LIMIT ${pageSize} OFFSET ${
+  const inquireArticleList = `SELECT * FROM article where status = 0 ORDER BY "order" ASC, isTop DESC LIMIT ${pageSize} OFFSET ${
     (currentPage - 1) * pageSize
   }`;
   db(inquireArticleList).then((results) => {

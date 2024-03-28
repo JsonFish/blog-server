@@ -26,9 +26,7 @@ exports.getLinkList = async (req, res) => {
     db(inquireLinkList).then((results) => {
       res.send({
         code: 200,
-        data: {
-          linkList: results,
-        },
+        data: results,
         message: "success",
       });
     });

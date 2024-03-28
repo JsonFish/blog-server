@@ -13,7 +13,7 @@ exports.getMessageList = async (req, res) => {
       (currentPage - 1) * pageSize
     }`;
     db(inquireList, status).then((results) => {
-      
+
       res.send({
         code: 200,
         data: {
@@ -26,11 +26,18 @@ exports.getMessageList = async (req, res) => {
   } else {
     // 前台查询
     const inquireList = `select * from messages where status = 1`;
-    db(inquireList).then((response) => {
+    await db(inquireList).then(async (response) => {
+      const newResponsePromise = response.map(async (msg) => {
+        const sql = "select username,avatar from users where id = ?";
+        const res = await db(sql, msg.userId);
+        Object.assign(msg, res[0]);
+        return msg;
+      });
+      const newResponse = await Promise.all(newResponsePromise);
       return res.send({
         code: 200,
         message: "success",
-        data: response,
+        data: newResponse,
       });
     });
   }

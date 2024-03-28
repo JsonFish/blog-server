@@ -4,7 +4,6 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 var session = require("express-session");
 const logger = require("morgan");
-
 const indexRouter = require("./routes/index");
 // 导入加密字符串配置文件
 const config = require("./config/default");
