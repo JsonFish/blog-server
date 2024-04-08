@@ -13,7 +13,7 @@ router.put(
   authentication,
   articleHandle.updateArticleStatus
 );
-router.get("/article/infor", authentication, articleHandle.getArticleById);
+router.get("/article/infor", articleHandle.getArticleById);
 // 草稿
 router.get("/article/draft", articleHandle.getDraft);
 router.post("/article/draft", authentication, articleHandle.saveDraft);
