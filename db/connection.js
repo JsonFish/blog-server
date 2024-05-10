@@ -13,7 +13,7 @@ const connectionDB = (sql, params) => {
       // conn： 这是表示数据库连接的对象。
       // 当连接成功时，可以使用这个对象执行数据库查询和其他操作
       if (err) {
-        console.log(" Failure");
+        console.log("Failure");
         reject(err);
       } else {
         console.log("Database Connected");
