@@ -14,14 +14,14 @@ exports.jwtSecretKey = "";
 exports.refreshTokenjwtSecretKey = "";
 
 // 七牛云配置
-exports.accessKey = "";
-exports.secretKey = "";
+exports.accessKey = ""; // accessKey
+exports.secretKey = ""; // secretKey
 exports.baseUrl = ""; // 图片域名
 exports.bucket = ""; // 空间名
 
 // 邮箱验证码配置
 exports.mailconfig = {
-  host: "smtp.qq.com", // 邮箱
+  host: "smtp.qq.com", // 邮箱 qq
   port: 465, // 默认端口
   auth: {
     user: "", // 邮箱账号
